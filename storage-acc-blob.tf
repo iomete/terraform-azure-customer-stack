@@ -1,9 +1,10 @@
 resource "azurerm_storage_account" "main" {
-  name                     = var.storage_account_name
+  name                     = local.storage_account_name
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  account_kind             = "StorageV2"
 
   identity {
     type = "SystemAssigned"
@@ -18,21 +19,23 @@ resource "azurerm_storage_container" "assets" {
   container_access_type = "private"
 }
 
-resource "azuread_application" "main" {
-  display_name = "iomete-aks"
-}
+### data lakohouse v2
 
-resource "azuread_service_principal" "main" {
-  application_id = azuread_application.main.application_id
-}
+# resource "azurerm_storage_data_lake_gen2_filesystem" "lakehouse_strg" {
+#   name               = "lakehouse_strg"
+#   storage_account_id = azurerm_storage_account.main.id
+
+#   properties = {
+#     hello = "aGVsbG8="
+#   }
+# }
 
 resource "azurerm_role_assignment" "logs_storage_access" {
   scope                = azurerm_storage_account.main.id
-  role_definition_name = "Contributor"
-  principal_id         = azuread_service_principal.main.object_id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_storage_account.main.identity[0].principal_id
 
   depends_on = [
     azurerm_storage_account.main,
-    azuread_service_principal.main
   ]
 }

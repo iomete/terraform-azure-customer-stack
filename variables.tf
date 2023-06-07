@@ -1,11 +1,20 @@
-variable "create_resource_group" {
-  type     = bool
-  default  = true
-  nullable = false
-}
+# variable "create_resource_group" {
+#   type     = bool
+#   default  = true
+#   nullable = false
+# }
+# variable "resource_group_name" {
+#   type        = string
+#   description = "Resource group name"
+
+# }
+# variable "node_resource_group_name" {
+#   type        = string
+#   description = "Nodes (virtual machines) resource group name"
+# }
 
 variable "location" {
-  default = "eastus"
+  description = "AKS region where cluster will be created"
 }
 
 variable "cluster_id" {
@@ -13,60 +22,42 @@ variable "cluster_id" {
   type        = string
 }
 
-
-variable "resource_group_name" {
-  type        = string
-  description = "Resource group name"
-  default     = "iomete-cluster-rg"
-}
-
 variable "orchestrator_version" {
-  type    = string
-  default = "1.24.9"
-}
-variable "node_min_count" {
-  type        = number
-  default     = 1 #system node count
-  description = "value for min. node size for lakehosue exec"
-
-}
-variable "node_max_count" {
-  type        = number
-  default     = 2 #system node count
-  description = "value for min. node size for lakehosue exec"
-
+  description = "AKS kubernetes version"
+  type        = string
+  default     = "1.24.9"
 }
 
 variable "exec_max_count" {
   type        = number
-  default     = 10 #if you want hotpool change this for you requirement
-  description = "value for max. node size for lakehosue executer"
+  default     = 200
+  description = "Max. Node count for for lakehosue executer"
 }
 
 variable "exec_min_count" {
   type        = number
-  default     = 1 #if you want hotpool change this for you requirement
-  description = "value for min. node size for lakehosue exec"
+  default     = 1
+  description = "Min. Node count for for lakehosue exec"
 
 }
 
 variable "driver_max_count" {
   type        = number
-  default     = 3 #if you want hotpool change this for you requirement
-  description = "value for max. node size for driver"
+  default     = 3
+  description = "Maximum Node count for for driver"
 }
 
 variable "driver_min_count" {
   type        = number
-  default     = 1 #if you want hotpool change this for you requirement
-  description = "Node size for min. for driver"
+  default     = 1
+  description = "Maximum Node count for for driver"
 
 }
 
-variable "vm_size" {
+variable "system_vm_size" {
   type        = string
-  default     = "Standard_F2s_v2"
-  description = "Node size for min. for driver"
+  default     = "Standard_D4as_v5"
+  description = "Node size for for system"
 
 }
 variable "sku_tier" {
@@ -76,21 +67,14 @@ variable "sku_tier" {
 
 }
 
-variable "node_resource_group_name" {
+variable "container_name" {
   type        = string
-  description = "Resource group name"
-  default     = "iomete-cluster-nrg"
+  description = "Container name for lakehouse"
 }
 
- 
 variable "storage_account_name" {
   type        = string
   description = "Storage account name"
-  default     = "iometeclusterstorageacc"
+
 }
-  
-variable "serv_password" {
-  type        = string
-  description = "Password seervice principal"
-  default     = "iomete@123"
-}
+

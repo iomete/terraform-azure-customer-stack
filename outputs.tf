@@ -12,7 +12,7 @@ output "aks_name" {
 output "azure_policy_enabled" {
   description = "The `azurerm_kubernetes_cluster`'s `azure_policy_enabled` argument. Should the Azure Policy Add-On be enabled? For more details please visit [Understand Azure Policy for Azure Kubernetes Service](https://docs.microsoft.com/en-ie/azure/governance/policy/concepts/rego-for-aks)"
   value       = azurerm_kubernetes_cluster.main.azure_policy_enabled
-} 
+}
 
 output "client_certificate" {
   description = "The `client_certificate` in the `azurerm_kubernetes_cluster`'s `kube_config` block. Base64 encoded public certificate used by clients to authenticate to the Kubernetes cluster."
@@ -84,4 +84,4 @@ output "node_resource_group" {
   value       = azurerm_kubernetes_cluster.main.node_resource_group
 }
 
- 
+
