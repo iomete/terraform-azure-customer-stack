@@ -1,8 +1,3 @@
-
-variable "storage_account_name" {
-  type        = string
-  description = "The name of the storage account"
-}
   
 variable "resource_group_name" {
   type        = string
@@ -14,14 +9,15 @@ variable "location" {
   description = "The location of the resource group"
 }
 
-variable "container_name" {
+variable "cluster_name" {
   type        = string
-  description = "The name of the container for lakehouse"
+  description = "The name of the dluster(data-plane)"
 }
  
 
-variable "storage_account_id" {
+variable "storage_account_name" {
   type        = string
-  description = "The id of the storage account"
+  description = "The name of existing storage account"
+  default = "empty"
 }
-  
+   

@@ -18,6 +18,13 @@ resource "kubernetes_secret" "iom-manage-secrets" {
         azurerm_subscription_display_name = data.azurerm_subscription.current.display_name
 
       },
+      workload = {
+        tenant_id = data.azurerm_client_config.current.tenant_id,
+        #client_id = data.azurerm_client_config.current.client_id,
+        oidc_issuer_url = azurerm_kubernetes_cluster.main.oidc_issuer_url,
+        client_id = azuread_service_principal.app.application_id,
+      },
+
       aks = {
         name           = azurerm_kubernetes_cluster.main.name,
         endpoint       = azurerm_kubernetes_cluster.main.kube_config.0.host,
@@ -27,7 +34,8 @@ resource "kubernetes_secret" "iom-manage-secrets" {
         storage_account_id   = azurerm_storage_account.main.id,
         storage_account_name = azurerm_storage_account.main.name,
         storage_account_key  = azurerm_storage_account.main.primary_access_key
-        storage_container    = azurerm_storage_container.assets.name,
+        storage_container    = module.storage-configuration.container_name
+        assets_container     = azurerm_storage_container.assets.name,
 
       },
       terraform = {

@@ -7,13 +7,11 @@
 ```hcl
 
 module "storage-configuration-[workspace-name]" {
-  source                     = "iomete/customer-stack/azure//modules/storage-configuration"
+  source                     = "iomete/azure-data-plane/azure//modules/storage-configuration"
   version                    = "1.0.0"
-  storage_account_name = var.storage_account_name
-  resource_group_name = var.resource_group_name
-  storage_account_id = var.storage_account_id
-  location = var.location
-  container_name = var.container_name
+  resource_group_name = "cluster resource group name"
+  location = "cluster installed location"
+  cluster_name = "existing_cluster_name"
 }
 
 #####################
@@ -26,6 +24,11 @@ output "container_name" {
 }
  
 
+ output "storage_account_name" {
+  description = "A container name to be created. Lakehouse data will be stored in this container"
+  value       = azurerm_storage_account.main.name
+}
+
 ```
 
 ## Description of variables
@@ -33,6 +36,6 @@ output "container_name" {
 | Name | Description | Required |
 | --- | --- | --- |
 | location | AKS region where cluster is deployed | yes |
-| storage_account_name | Name of storage account for accessing blob storage | yes |
-| container_name | Name of Blob sotrage container name for workspace | yes |
+| resource_group_name | Cluster installed resource group name | yes |
+| cluster_name | Existing cluster name | yes |
 

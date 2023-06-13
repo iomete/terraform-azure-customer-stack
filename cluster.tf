@@ -28,11 +28,51 @@ resource "azurerm_subnet" "azure-iom" {
 }
 
 ###############################################
+# Activate Workload Identity
+###############################################
+
+resource "null_resource" "register_workload_identity" {
+  provisioner "local-exec" {
+    command    = "az feature register --namespace Microsoft.ContainerService --name EnableWorkloadIdentityPreview "
+    on_failure = fail
+  }
+}
+
+resource "null_resource" "create_workload_identity_status" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+  depends_on = [
+    null_resource.register_workload_identity
+  ]
+  provisioner "local-exec" {
+    command    = "az feature show --namespace Microsoft.ContainerService --name EnableWorkloadIdentityPreview | jq -r .properties.state > status.txt"
+    on_failure = fail
+  }
+}
+
+resource "null_resource" "check_workload_identity_status" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+  depends_on = [
+    null_resource.create_workload_identity_status
+  ]
+  provisioner "local-exec" {
+    command    = "if [ $(cat status.txt) = 'Registered' ]; then $(exit 0); else echo 'EnableWorkloadIdentityPreview not enabled'; $(exit 1); fi"
+    on_failure = fail
+}
+  }
+
+###############################################
 # AKS Cluster
 ###############################################
 
 
 resource "azurerm_kubernetes_cluster" "main" {
+  depends_on = [
+    null_resource.check_workload_identity_status
+  ]
   name = local.cluster_name
   ### choose the resource goup to use for the cluster
   location            = azurerm_resource_group.main.location
@@ -40,11 +80,13 @@ resource "azurerm_kubernetes_cluster" "main" {
   node_resource_group = "${local.cluster_name}-nrg"
   dns_prefix          = local.cluster_name
   kubernetes_version  = var.orchestrator_version
+  oidc_issuer_enabled = true
+  workload_identity_enabled = true
 
 
   default_node_pool {
     name                        = "systempool"
-    zones                       = [1]
+    zones                       = [var.zones]
     node_count                  = 1
     min_count                   = 1
     max_count                   = 3
@@ -75,12 +117,13 @@ resource "azurerm_kubernetes_cluster" "main" {
     type = "SystemAssigned"
   }
 
+
+# identity {
+  #   type = "UserAssigned"
+  #   identity_ids = [azurerm_user_assigned_identity.iom_user.id]
+  # }
   http_application_routing_enabled = false
-  depends_on = [
-    azurerm_resource_group.main
-  ]
-
-
+   
 }
 
 ###############################################

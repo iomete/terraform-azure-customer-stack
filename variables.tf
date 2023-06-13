@@ -1,25 +1,16 @@
-# variable "create_resource_group" {
-#   type     = bool
-#   default  = true
-#   nullable = false
-# }
-# variable "resource_group_name" {
-#   type        = string
-#   description = "Resource group name"
-
-# }
-# variable "node_resource_group_name" {
-#   type        = string
-#   description = "Nodes (virtual machines) resource group name"
-# }
 
 variable "location" {
+  type = string
   description = "AKS region where cluster will be created"
 }
-
-variable "cluster_id" {
-  description = "Cluster id from IOMETE. This should match the cluster id in IOMETE"
+ variable "zones" {
   type        = string
+  default     = "2"
+  description = "AKS region where cluster and resources will be created"
+}
+variable "cluster_id" {
+  type        = string
+  description = "Cluster id from IOMETE. This should match the cluster id in IOMETE"
 }
 
 variable "orchestrator_version" {
@@ -60,21 +51,3 @@ variable "system_vm_size" {
   description = "Node size for for system"
 
 }
-variable "sku_tier" {
-  type        = string
-  default     = "Free"
-  description = "Node size for min."
-
-}
-
-variable "container_name" {
-  type        = string
-  description = "Container name for lakehouse"
-}
-
-variable "storage_account_name" {
-  type        = string
-  description = "Storage account name"
-
-}
-

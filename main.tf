@@ -1,9 +1,13 @@
 data "azurerm_client_config" "current" {}
 
+resource "random_id" "random" {
+  byte_length = 5
+}
+  
 locals {
   cluster_name         = "iomete-${var.cluster_id}"
-  storage_account_name = var.storage_account_name
-  module_version       = "1.0.2"
+  storage_account_name = "iomdataplane${random_id.random.hex}"
+  module_version       = "1.0.0"
 
   tags = {
     "iomete.com-cluster_id" : var.cluster_id
@@ -41,12 +45,14 @@ resource "null_resource" "save_outputs" {
   provisioner "local-exec" {
     command = <<-EOT
 
-      echo "Client Certificate: $(terraform output client_certificate)">> IOMETE_DATA &&
-      echo "Client Key: $(terraform output client_key)" >> IOMETE_DATA &&
-      echo "Cluster CA: $(terraform output cluster_ca_certificate)" >> IOMETE_DATA &&
-      echo "AKS Endpoint: $(terraform output cluster_fqdn )" >> IOMETE_DATA &&
-      echo "AKS Name: $(terraform output cluster_name )" >> IOMETE_DATA 
-      echo IOMETE_DATA
+      if [ ! -s "IOMETE_DATA" ]; then
+      echo "Client Certificate: $(terraform output client_certificate)" >> IOMETE_DATA
+      echo "Client Key: $(terraform output client_key)" >> IOMETE_DATA
+      echo "Cluster CA: $(terraform output cluster_ca_certificate)" >> IOMETE_DATA
+      echo "AKS Endpoint: $(terraform output cluster_fqdn)" >> IOMETE_DATA
+      echo "AKS Name: $(terraform output cluster_name)" >> IOMETE_DATA
+      fi
+
 
     EOT
   }
@@ -57,9 +63,11 @@ module "storage-configuration" {
 
   storage_account_name = azurerm_storage_account.main.name
   resource_group_name  = azurerm_resource_group.main.name
-  storage_account_id   = azurerm_storage_account.main.id
   location             = var.location
-  container_name       = var.container_name
+  cluster_name         = local.cluster_name
 
 }
+
+
+
 

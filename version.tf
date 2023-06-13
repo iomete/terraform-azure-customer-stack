@@ -5,6 +5,11 @@ terraform {
       version = ">= 3.0"
      }
 
+     azuread = {
+      source  = "hashicorp/azuread"
+      version = ">= 2.39"
+     }
+
     random = {
       source  = "hashicorp/random"
       version = "3.1.0"
@@ -30,5 +35,9 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+        key_vault {
+      purge_soft_delete_on_destroy = true
+    }
+  }
 }

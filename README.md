@@ -7,11 +7,14 @@
 
 After install module will create the following resources in local directory (where you run terraform apply)
 
+We are saving this output in IOMETE_DATA file. After complete installing, you can find this file in the same directory where you run terraform apply.
+
 ```shell
 
 client_certificate.pem
 client_key.pem
 cluster_ca_certificate.pem
+
 
 ```
 Open this file ordinary text editor and copy the content of the file to the IOMETE control plane.
